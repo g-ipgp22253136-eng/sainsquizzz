@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二年级科学：魔法甜品与果蔬屋（第4-5页练习特训）</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap');
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 50%, #e0f2fe 100%);
+            user-select: none;
+            overflow-x: hidden;
+        }
+        .candy-shadow {
+            box-shadow: 0 8px 0 rgba(219, 39, 119, 0.18), 0 15px 25px rgba(236, 72, 153, 0.15);
+        }
+        .btn-cute {
+            transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.12s ease;
+        }
+        .btn-cute:hover {
+            transform: translateY(-3px);
+        }
+        .btn-cute:active {
+            transform: translateY(2px);
+        }
+        .pop-in {
+            animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .shake {
+            animation: shake 0.35s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .float-slow {
+            animation: floatSlow 3s ease-in-out infinite;
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-3 md:p-5 text-slate-800">
+
+    <!-- 顶部粉紫马卡龙店长状态栏 -->
+    <div id="hud" class="hidden w-full max-w-4xl bg-white/95 backdrop-blur border-4 border-pink-300 rounded-3xl p-3 md:p-4 mb-3 flex flex-wrap justify-between items-center candy-shadow">
+        <div class="flex items-center space-x-3">
+            <span id="wave-badge" class="bg-gradient-to-r from-pink-500 to-purple-500 text-white font-black px-3.5 py-1 rounded-full text-xs md:text-sm shadow">
+                第一波营业
+            </span>
+            <div>
+                <h1 id="wave-title" class="font-black text-base md:text-xl text-pink-600">果蔬货架大整理</h1>
+                <p id="wave-sub" class="text-xs text-slate-500 hidden sm:block">讲义第5页练习 B：区分水果与蔬菜</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3 md:space-x-4 mt-2 sm:mt-0">
+            <!-- 爱心口碑 -->
+            <div class="bg-pink-50 px-3 py-1.5 rounded-2xl border-2 border-pink-200 flex items-center space-x-1">
+                <span class="text-xs text-pink-500 font-bold hidden md:inline">口碑：</span>
+                <span id="hearts-text" class="text-sm md:text-base tracking-wider">💖💖💖💖💖</span>
+            </div>
+
+            <!-- 魔法金币/星星 -->
+            <div class="bg-amber-50 px-3.5 py-1.5 rounded-2xl border-2 border-amber-300 flex items-center space-x-1">
+                <span class="text-lg">🌟</span>
+                <span id="score-text" class="text-lg md:text-2xl font-black text-amber-500">0</span>
+            </div>
+
+            <!-- 返回主页 -->
+            <button onclick="showHome()" class="bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold text-xs px-3 py-2.5 rounded-2xl border-2 border-purple-200 transition">
+                回大厅
+            </button>
+        </div>
+    </div>
+
+    <!-- 主店铺舞台容器 -->
+    <div id="shop-stage" class="w-full max-w-4xl bg-white/95 rounded-[2rem] border-4 border-pink-300 candy-shadow overflow-hidden relative min-h-[560px] flex flex-col justify-between">
+
+        <!-- ==================== 开始大厅画面 ==================== -->
+        <div id="start-screen" class="p-6 md:p-10 text-center bg-gradient-to-b from-pink-50 via-white to-purple-50 flex-1 flex flex-col items-center justify-center">
+            <div class="inline-block bg-pink-100 border-2 border-pink-300 text-pink-600 font-black px-4 py-1 rounded-full text-xs md:text-sm mb-3">
+                ✨ 二年级科学 · 单元一（讲义第4-5页特训） ✨
+            </div>
+            <div class="text-6xl md:text-7xl mb-3 float-slow">🧁🍓🐰👑</div>
+            <h1 class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 mb-3 tracking-wide">
+                魔法甜品与果蔬屋
+            </h1>
+            <p class="text-slate-600 text-sm md:text-base max-w-xl mb-6 font-bold leading-relaxed">
+                欢迎来到梦幻森林小店！小店长请接待可爱的森林动物顾客，<br>
+                完成 <span class="text-pink-500">三大营业挑战</span>，点亮店里的 <span class="text-purple-500">魔法水晶吊灯</span> 吧！
+            </p>
+
+            <!-- 三波营业预览卡片（也可点击单独练习某一波） -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl mb-7 text-left">
+                <div onclick="startWave(1)" class="btn-cute cursor-pointer bg-rose-50 hover:bg-rose-100 border-2 border-rose-300 rounded-2xl p-4 shadow-sm">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="bg-rose-500 text-white text-xs font-black px-2.5 py-0.5 rounded-full">第一波 · 练习B</span>
+                        <span class="text-2xl">🍎🥬</span>
+                    </div>
+                    <div class="font-black text-rose-700 text-base mt-1">果蔬货架大整理</div>
+                    <p class="text-xs text-slate-600 mt-1">把苹果、包菜、胡萝卜、香蕉等放进正确的“水果篮”或“蔬菜篮”！</p>
+                </div>
+
+                <div onclick="startWave(2)" class="btn-cute cursor-pointer bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 rounded-2xl p-4 shadow-sm">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="bg-amber-500 text-white text-xs font-black px-2.5 py-0.5 rounded-full">第二波 · 练习C&D</span>
+                        <span class="text-2xl">🍋🌶️🍦</span>
+                    </div>
+                    <div class="font-black text-amber-700 text-base mt-1">味觉与冷热特调</div>
+                    <p class="text-xs text-slate-600 mt-1">招待小动物点单！区分味道（酸 vs 辣）与温度（冷 vs 热）！</p>
+                </div>
+
+                <div onclick="startWave(3)" class="btn-cute cursor-pointer bg-purple-50 hover:bg-purple-100 border-2 border-purple-300 rounded-2xl p-4 shadow-sm">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="bg-purple-500 text-white text-xs font-black px-2.5 py-0.5 rounded-full">第三波 · 练习A</span>
+                        <span class="text-2xl">👀✨</span>
+                    </div>
+                    <div class="font-black text-purple-700 text-base mt-1">感官与官能双胞胎</div>
+                    <p class="text-xs text-slate-600 mt-1">区分“感官（皮肤/眼睛）”和“官能（触觉/视觉）”，再也不写反！</p>
+                </div>
+            </div>
+
+            <button onclick="startFullShop()" class="btn-cute bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white font-black text-xl md:text-2xl px-12 py-4 rounded-full shadow-lg shadow-pink-300">
+                开店营业啦！✨🧁
+            </button>
+        </div>
+
+        <!-- ==================== 第一波：果蔬货架大整理（讲义第5页 练习B） ==================== -->
+        <div id="wave1-screen" class="hidden p-5 md:p-8 flex-1 flex flex-col justify-between bg-gradient-to-b from-rose-50/60 to-white">
+            <div class="text-center">
+                <div class="inline-block bg-rose-100 text-rose-600 font-black px-3 py-1 rounded-full text-xs mb-2">
+                    讲义第5页 · 练习 B：把下列食物正确地分类（<span id="w1-progress">1</span> / 8）
+                </div>
+                <h2 class="text-xl md:text-2xl font-black text-slate-800">小店长，请把新进货的食物放进正确的竹篮里！</h2>
+            </div>
+
+            <!-- 中央待分类食物展示卡 -->
+            <div id="w1-card" class="my-auto mx-auto bg-white border-4 border-pink-300 rounded-[2rem] p-6 md:p-8 w-full max-w-sm text-center shadow-lg pop-in">
+                <div id="w1-emoji" class="text-8xl mb-3">🍎</div>
+                <div id="w1-name" class="text-3xl font-black text-slate-800">苹果</div>
+                <div class="text-xs text-slate-400 font-bold mt-1">它是水果还是蔬菜呢？</div>
+            </div>
+
+            <!-- 底部两个可爱分拣竹篮按钮 -->
+            <div class="grid grid-cols-2 gap-4 md:gap-6 max-w-2xl mx-auto w-full mt-4">
+                <button onclick="checkWave1('水果')" class="btn-cute bg-gradient-to-b from-rose-400 to-pink-500 border-4 border-rose-200 text-white rounded-3xl p-5 shadow-lg flex flex-col items-center">
+                    <span class="text-4xl md:text-5xl mb-1">🧺🍓</span>
+                    <span class="text-xl md:text-2xl font-black">水果篮</span>
+                    <span class="text-xs opacity-90 font-bold mt-0.5">甜美多汁的水果</span>
+                </button>
+
+                <button onclick="checkWave1('蔬菜')" class="btn-cute bg-gradient-to-b from-emerald-400 to-teal-500 border-4 border-emerald-200 text-white rounded-3xl p-5 shadow-lg flex flex-col items-center">
+                    <span class="text-4xl md:text-5xl mb-1">🧺🥦</span>
+                    <span class="text-xl md:text-2xl font-black">蔬菜篮</span>
+                    <span class="text-xs opacity-90 font-bold mt-0.5">营养健康的蔬菜</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== 第二波：森林小动物特调点单（讲义第5页 练习C味道 & 练习D温度） ==================== -->
+        <div id="wave2-screen" class="hidden p-5 md:p-8 flex-1 flex flex-col justify-between bg-gradient-to-b from-amber-50/70 to-pink-50/40">
+            <!-- 顾客点单对话区 -->
+            <div class="bg-white border-4 border-amber-300 rounded-3xl p-4 md:p-5 shadow-md flex flex-col sm:flex-row items-center gap-4">
+                <div id="customer-avatar" class="w-20 h-20 md:w-24 md:h-24 rounded-full bg-pink-100 border-4 border-pink-300 flex items-center justify-center text-5xl md:text-6xl shrink-0 float-slow">
+                    🐰
+                </div>
+                <div class="text-center sm:text-left flex-1">
+                    <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
+                        <span id="customer-name" class="bg-amber-400 text-slate-900 font-black text-xs px-3 py-0.5 rounded-full">小兔子顾客</span>
+                        <span id="w2-progress-badge" class="bg-purple-100 text-purple-700 font-bold text-xs px-2.5 py-0.5 rounded-full">点单 1 / 4</span>
+                    </div>
+                    <h2 id="customer-order" class="text-lg md:text-2xl font-black text-slate-800 leading-snug">
+                        “小店长你好！我想买【酸酸的】食物，请帮我选出 2 样！”
+                    </h2>
+                    <p id="w2-sub-hint" class="text-xs md:text-sm font-bold text-pink-600 mt-1">
+                        已选对：<span id="w2-picked-count">0</span> / 2 样
+                    </p>
+                </div>
+            </div>
+
+            <!-- 甜品展示柜（6张卡片，其中2张符合当前点单要求） -->
+            <div id="w2-shelf" class="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 my-4">
+                <!-- 由 JS 动态生成 6 个食物卡片 -->
+            </div>
+
+            <div class="text-center text-xs text-slate-500 font-bold">
+                💡 提示：直接点击展示柜里符合要求的食物卡片即可端给小动物顾客哦！
+            </div>
+        </div>
+
+        <!-- ==================== 第三波：五官与官能双胞胎配对（讲义第4页 练习A） ==================== -->
+        <div id="wave3-screen" class="hidden p-5 md:p-8 flex-1 flex flex-col justify-between bg-gradient-to-b from-purple-50 to-pink-50">
+            <!-- 顶部水晶吊灯进度指示 -->
+            <div class="flex flex-wrap items-center justify-between bg-white/90 border-2 border-purple-200 rounded-2xl px-4 py-2.5 shadow-sm">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xl">🔮</span>
+                    <span class="font-black text-purple-800 text-sm md:text-base">点亮魔法水晶吊灯（讲义第4页 练习A）</span>
+                </div>
+                <div id="crystal-lamps" class="flex space-x-1.5 text-xl">
+                    <span>⚪</span><span>⚪</span><span>⚪</span><span>⚪</span><span>⚪</span>
+                </div>
+            </div>
+
+            <!-- 中央情境图卡片 -->
+            <div id="w3-card" class="my-3 bg-white border-4 border-purple-300 rounded-3xl p-5 md:p-6 text-center shadow-md pop-in">
+                <div class="inline-block bg-purple-100 text-purple-700 font-bold text-xs px-3 py-0.5 rounded-full mb-2">
+                    生活观察情境 (<span id="w3-step-num">1</span> / 5)
+                </div>
+                <div id="w3-scene-emoji" class="text-6xl md:text-7xl mb-2">🍚😋</div>
+                <h2 id="w3-scene-title" class="text-xl md:text-2xl font-black text-slate-800">香喷喷的米饭真好吃！</h2>
+                <p id="w3-scene-desc" class="text-xs md:text-sm text-slate-500 font-bold mt-1">
+                    请依次为它点亮【感官（身体器官）】和【官能（觉）】两颗魔法水晶！
+                </p>
+            </div>
+
+            <!-- 双胞胎水晶选择器：左【感官】 + 右【官能】 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 左侧：感官（身体器官） -->
+                <div class="bg-pink-50/90 border-2 border-pink-300 rounded-3xl p-4">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <span class="font-black text-pink-700 text-sm md:text-base">① 选择【感官】（身体器官）</span>
+                        <span id="w3-organ-status" class="text-xs font-black px-2.5 py-0.5 rounded-full bg-white text-pink-500 border border-pink-200">待选择</span>
+                    </div>
+                    <div id="w3-organ-btns" class="grid grid-cols-5 gap-1.5">
+                        <!-- 眼睛、耳朵、鼻子、舌头、皮肤 -->
+                    </div>
+                </div>
+
+                <!-- 右侧：官能（视觉/听觉/嗅觉/味觉/触觉） -->
+                <div class="bg-indigo-50/90 border-2 border-indigo-300 rounded-3xl p-4">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <span class="font-black text-indigo-700 text-sm md:text-base">② 选择【官能】（带“觉”字）</span>
+                        <span id="w3-sense-status" class="text-xs font-black px-2.5 py-0.5 rounded-full bg-white text-indigo-500 border border-indigo-200">待选择</span>
+                    </div>
+                    <div id="w3-sense-btns" class="grid grid-cols-5 gap-1.5">
+                        <!-- 视觉、听觉、嗅觉、味觉、触觉 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== 温馨提示浮窗（替代 alert） ==================== -->
+        <div id="toast-banner" class="hidden absolute bottom-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full font-black text-white shadow-xl text-sm md:text-base z-40 whitespace-nowrap">
+            提示信息
+        </div>
+
+        <!-- ==================== 波次过关 / 最终荣誉结算画面 ==================== -->
+        <div id="end-screen" class="hidden p-8 md:p-10 text-center bg-gradient-to-b from-pink-50 via-purple-50 to-amber-50 flex-1 flex flex-col items-center justify-center">
+            <div id="end-emoji" class="text-7xl md:text-8xl mb-3 float-slow">👑🧁</div>
+            <h2 id="end-title" class="text-3xl md:text-4xl font-black text-pink-600 mb-2">第一波营业大成功！</h2>
+            <p id="end-desc" class="text-slate-600 font-bold text-sm md:text-base max-w-lg mb-6">
+                所有果蔬都整理得整整齐齐啦！
+            </p>
+
+            <!-- 小店长勋章展示框 -->
+            <div class="bg-white border-4 border-pink-300 rounded-3xl p-6 mb-7 w-full max-w-md shadow-lg">
+                <div class="text-xs text-purple-500 font-black mb-1">✨ 获得荣誉称号 ✨</div>
+                <div id="end-medal" class="text-2xl md:text-3xl font-black text-purple-700 mb-4">🌸 甜美果蔬整理师</div>
+                <div class="grid grid-cols-2 gap-3 border-t-2 border-pink-100 pt-4">
+                    <div>
+                        <div class="text-xs text-slate-400 font-bold">魔法金币</div>
+                        <div id="end-score" class="text-2xl md:text-3xl font-black text-amber-500">0 🌟</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-slate-400 font-bold">店铺口碑</div>
+                        <div id="end-hearts" class="text-xl md:text-2xl font-black text-pink-500">💖💖💖💖💖</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <button id="next-wave-btn" onclick="goNextWave()" class="btn-cute bg-gradient-to-r from-pink-500 to-purple-500 text-white font-black text-lg md:text-xl px-9 py-4 rounded-full shadow-lg">
+                    开启下一波营业 ➡️
+                </button>
+                <button onclick="showHome()" class="btn-cute bg-white hover:bg-pink-50 text-pink-600 font-black text-lg px-7 py-4 rounded-full border-2 border-pink-300">
+                    返回小店大厅 🏠
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ==================== 题库数据（100% 对应讲义第 4、5 页练习题 A, B, C, D） ====================
+
+        // 第一波：练习 B（水果 vs 蔬菜，包含讲义原题：苹果、包菜、胡萝卜、香蕉 + 拓展巩固）
+        const wave1Foods = [
+            { emoji: "🍎", name: "苹果", type: "水果" },
+            { emoji: "🥬", name: "包菜", type: "蔬菜" },
+            { emoji: "🥕", name: "胡萝卜", type: "蔬菜" },
+            { emoji: "🍌", name: "香蕉", type: "水果" },
+            { emoji: "🍉", name: "西瓜", type: "水果" },
+            { emoji: "🥦", name: "西兰花", type: "蔬菜" },
+            { emoji: "🍇", name: "葡萄", type: "水果" },
+            { emoji: "🍆", name: "茄子", type: "蔬菜" }
+        ];
+
+        // 第二波：练习 C（酸 vs 辣）与 练习 D（冷 vs 热）
+        const wave2Orders = [
+            {
+                customerAvatar: "🐰",
+                customerName: "小兔子顾客",
+                orderText: "“小店长，我想做果汁！请帮我选出 2 样【酸酸的】食物！”",
+                targetTag: "酸",
+                items: [
+                    { emoji: "🍋", name: "柠檬", tag: "酸", picked: false },
+                    { emoji: "🌶️", name: "辣椒酱", tag: "辣", picked: false },
+                    { emoji: "🍍", name: "凤梨", tag: "酸", picked: false },
+                    { emoji: "🫚", name: "生姜", tag: "辣", picked: false },
+                    { emoji: "🍰", name: "草莓蛋糕", tag: "甜", picked: false },
+                    { emoji: "🥛", name: "纯牛奶", tag: "淡", picked: false }
+                ]
+            },
+            {
+                customerAvatar: "🐻",
+                customerName: "小熊厨师",
+                orderText: "“我要煮咖喱啦！请帮我找出 2 样【辣辣的】调味食材！”",
+                targetTag: "辣",
+                items: [
+                    { emoji: "🌶️", name: "辣椒酱", tag: "辣", picked: false },
+                    { emoji: "🍋", name: "柠檬", tag: "酸", picked: false },
+                    { emoji: "🫚", name: "生姜", tag: "辣", picked: false },
+                    { emoji: "🍍", name: "凤梨", tag: "酸", picked: false },
+                    { emoji: "🍦", name: "冰淇淋", tag: "甜", picked: false },
+                    { emoji: "🍌", name: "香蕉", tag: "甜", picked: false }
+                ]
+            },
+            {
+                customerAvatar: "🐧",
+                customerName: "小企鹅顾客",
+                orderText: "“天气好热呀！请给我拿 2 样【冷冷的】食物解暑吧！”",
+                targetTag: "冷",
+                items: [
+                    { emoji: "🍦", name: "冰淇淋", tag: "冷", picked: false },
+                    { emoji: "🍲", name: "热汤", tag: "热", picked: false },
+                    { emoji: "🧊", name: "冰块刨冰", tag: "冷", picked: false },
+                    { emoji: "☕", name: "热茶", tag: "热", picked: false },
+                    { emoji: "🥟", name: "刚蒸好的包子", tag: "热", picked: false },
+                    { emoji: "🍜", name: "热面条", tag: "热", picked: false }
+                ]
+            },
+            {
+                customerAvatar: "🐱",
+                customerName: "小猫咪顾客",
+                orderText: "“下雨天冷飕飕的，请给我端来 2 样【热热的】食物暖暖身子！”",
+                targetTag: "热",
+                items: [
+                    { emoji: "🍲", name: "热汤", tag: "热", picked: false },
+                    { emoji: "🍦", name: "冰淇淋", tag: "冷", picked: false },
+                    { emoji: "☕", name: "热可可", tag: "热", picked: false },
+                    { emoji: "🧊", name: "冰镇果汁", tag: "冷", picked: false },
+                    { emoji: "🍧", name: "红豆雪花冰", tag: "冷", picked: false },
+                    { emoji: "❄️", name: "冰棒", tag: "冷", picked: false }
+                ]
+            }
+        ];
+
+        // 第三波：练习 A（感官 vs 官能 —— 讲义第4页 5大生活图）
+        const wave3Scenes = [
+            {
+                emoji: "🍚😋",
+                title: "吃香喷喷的米饭，尝出米饭的味道",
+                organ: "舌头",
+                sense: "味觉"
+            },
+            {
+                emoji: "📺👀",
+                title: "坐在客厅看有趣的电视节目",
+                organ: "眼睛",
+                sense: "视觉"
+            },
+            {
+                emoji: "🐈✋",
+                title: "用手抚摸小猫咪软绵绵的毛发",
+                organ: "皮肤",
+                sense: "触觉"
+            },
+            {
+                emoji: "🌸👃",
+                title: "凑近花园闻一闻花朵的香味",
+                organ: "鼻子",
+                sense: "嗅觉"
+            },
+            {
+                emoji: "📻🎶",
+                title: "听收音机播放好听的音乐",
+                organ: "耳朵",
+                sense: "听觉"
+            }
+        ];
+
+        const allOrgans = [
+            { name: "眼睛", icon: "👀" },
+            { name: "耳朵", icon: "👂" },
+            { name: "鼻子", icon: "👃" },
+            { name: "舌头", icon: "👅" },
+            { name: "皮肤", icon: "✋" }
+        ];
+
+        const allSenses = ["视觉", "听觉", "嗅觉", "味觉", "触觉"];
+
+        // 全局状态
+        let isCampaign = false;
+        let currentWave = 1;
+        let score = 0;
+        let hearts = 5;
+
+        // 波次内部状态
+        let w1Idx = 0;
+        let w2Idx = 0;
+        let w2CurrentOrder = null;
+        let w3Idx = 0;
+        let w3OrganDone = false;
+        let w3SenseDone = false;
+        let isTransitioning = false;
+
+        function showToast(msg, isGood) {
+            const toast = document.getElementById('toast-banner');
+            toast.innerText = msg;
+            toast.className = `absolute bottom-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full font-black text-white shadow-xl text-sm md:text-base z-40 whitespace-nowrap pop-in ${
+                isGood ? 'bg-gradient-to-r from-emerald-500 to-teal-500' : 'bg-gradient-to-r from-rose-500 to-pink-600'
+            }`;
+            toast.classList.remove('hidden');
+            clearTimeout(window.shopToastTimer);
+            window.shopToastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 1300);
+        }
+
+        function shakeStage() {
+            const stage = document.getElementById('shop-stage');
+            stage.classList.add('shake');
+            setTimeout(() => stage.classList.remove('shake'), 350);
+        }
+
+        function updateHUD() {
+            document.getElementById('score-text').innerText = score;
+            const fullHearts = Math.max(0, hearts);
+            const emptyHearts = Math.max(0, 5 - fullHearts);
+            document.getElementById('hearts-text').innerText = '💖'.repeat(fullHearts) + '🤍'.repeat(emptyHearts);
+        }
+
+        function hideAllScreens() {
+            ['start-screen', 'wave1-screen', 'wave2-screen', 'wave3-screen', 'end-screen'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+        }
+
+        function showHome() {
+            hideAllScreens();
+            document.getElementById('hud').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        }
+
+        function startFullShop() {
+            isCampaign = true;
+            score = 0;
+            hearts = 5;
+            startWave(1, true);
+        }
+
+        function startWave(waveNum, keepStats = false) {
+            currentWave = waveNum;
+            if (!keepStats) {
+                isCampaign = false;
+                score = 0;
+                hearts = 5;
+            }
+            isTransitioning = false;
+
+            hideAllScreens();
+            document.getElementById('hud').classList.remove('hidden');
+            updateHUD();
+
+            if (waveNum === 1) {
+                document.getElementById('wave-badge').innerText = "第一波营业";
+                document.getElementById('wave-title').innerText = "果蔬货架大整理";
+                document.getElementById('wave-sub').innerText = "讲义第5页练习 B：水果 vs 蔬菜";
+                w1Idx = 0;
+                document.getElementById('wave1-screen').classList.remove('hidden');
+                renderWave1();
+            } else if (waveNum === 2) {
+                document.getElementById('wave-badge').innerText = "第二波营业";
+                document.getElementById('wave-title').innerText = "味觉与冷热特调";
+                document.getElementById('wave-sub').innerText = "讲义第5页练习 C & D：酸/辣 与 冷/热";
+                w2Idx = 0;
+                document.getElementById('wave2-screen').classList.remove('hidden');
+                loadWave2Order();
+            } else if (waveNum === 3) {
+                document.getElementById('wave-badge').innerText = "第三波营业";
+                document.getElementById('wave-title').innerText = "感官与官能双胞胎";
+                document.getElementById('wave-sub').innerText = "讲义第4页练习 A：区分感官与官能";
+                w3Idx = 0;
+                document.getElementById('wave3-screen').classList.remove('hidden');
+                renderWave3();
+            }
+        }
+
+        // ==================== 第一波逻辑：水果 vs 蔬菜 ====================
+        function renderWave1() {
+            const food = wave1Foods[w1Idx];
+            document.getElementById('w1-progress').innerText = w1Idx + 1;
+            document.getElementById('w1-emoji').innerText = food.emoji;
+            document.getElementById('w1-name').innerText = food.name;
+
+            const card = document.getElementById('w1-card');
+            card.classList.remove('pop-in');
+            void card.offsetWidth;
+            card.classList.add('pop-in');
+        }
+
+        function checkWave1(chosenType) {
+            if (isTransitioning) return;
+            const food = wave1Foods[w1Idx];
+
+            if (chosenType === food.type) {
+                score += 50;
+                updateHUD();
+                showToast(`✨ 太棒了！【${food.name}】放进了${food.type}篮！+50 🌟`, true);
+                w1Idx++;
+
+                if (w1Idx >= wave1Foods.length) {
+                    isTransitioning = true;
+                    setTimeout(() => showWaveComplete(1), 700);
+                } else {
+                    renderWave1();
+                }
+            } else {
+                hearts = Math.max(1, hearts - 1);
+                updateHUD();
+                shakeStage();
+                showToast(`💭 哎呀，【${food.name}】不是${chosenType}哦，再试一次！`, false);
+            }
+        }
+
+        // ==================== 第二波逻辑：酸/辣 与 冷/热 ====================
+        function loadWave2Order() {
+            const orderTemplate = wave2Orders[w2Idx];
+            // 深拷贝并打乱商品位置
+            w2CurrentOrder = {
+                ...orderTemplate,
+                items: orderTemplate.items.map(it => ({ ...it, picked: false })).sort(() => Math.random() - 0.5)
+            };
+
+            document.getElementById('customer-avatar').innerText = w2CurrentOrder.customerAvatar;
+            document.getElementById('customer-name').innerText = w2CurrentOrder.customerName;
+            document.getElementById('w2-progress-badge').innerText = `点单 ${w2Idx + 1} / ${wave2Orders.length}`;
+            document.getElementById('customer-order').innerText = w2CurrentOrder.orderText;
+            document.getElementById('w2-picked-count').innerText = "0";
+
+            renderWave2Shelf();
+        }
+
+        function renderWave2Shelf() {
+            const shelf = document.getElementById('w2-shelf');
+            shelf.innerHTML = w2CurrentOrder.items.map((item, idx) => {
+                if (item.picked) {
+                    return `
+                        <div class="bg-emerald-100 border-4 border-emerald-400 rounded-3xl p-4 flex flex-col items-center justify-center opacity-80">
+                            <span class="text-4xl mb-1">${item.emoji}</span>
+                            <span class="font-black text-emerald-800 text-base">${item.name}</span>
+                            <span class="text-xs font-black text-emerald-600 mt-1">✅ 已端给顾客</span>
+                        </div>
+                    `;
+                }
+                return `
+                    <button onclick="pickWave2Item(${idx})" class="btn-cute bg-white hover:bg-pink-50 border-3 border-pink-200 hover:border-pink-400 rounded-3xl p-4 shadow-sm flex flex-col items-center justify-center">
+                        <span class="text-4xl md:text-5xl mb-1">${item.emoji}</span>
+                        <span class="font-black text-slate-800 text-base md:text-lg">${item.name}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function pickWave2Item(idx) {
+            if (isTransitioning) return;
+            const item = w2CurrentOrder.items[idx];
+            if (item.picked) return;
+
+            if (item.tag === w2CurrentOrder.targetTag) {
+                item.picked = true;
+                score += 80;
+                updateHUD();
+                renderWave2Shelf();
+
+                const pickedCount = w2CurrentOrder.items.filter(it => it.picked).length;
+                document.getElementById('w2-picked-count').innerText = pickedCount;
+                showToast(`🎉 选对啦！【${item.name}】是${item.tag}的！+80 🌟`, true);
+
+                if (pickedCount >= 2) {
+                    isTransitioning = true;
+                    setTimeout(() => {
+                        isTransitioning = false;
+                        w2Idx++;
+                        if (w2Idx >= wave2Orders.length) {
+                            showWaveComplete(2);
+                        } else {
+                            loadWave2Order();
+                        }
+                    }, 950);
+                }
+            } else {
+                hearts = Math.max(1, hearts - 1);
+                updateHUD();
+                shakeStage();
+                showToast(`🙈 【${item.name}】是“${item.tag}”的，顾客要的是【${w2CurrentOrder.targetTag}】的哦！`, false);
+            }
+        }
+
+        // ==================== 第三波逻辑：感官 vs 官能双胞胎配对 ====================
+        function renderWave3() {
+            const scene = wave3Scenes[w3Idx];
+            w3OrganDone = false;
+            w3SenseDone = false;
+
+            // 更新顶部水晶吊灯图标
+            const lamps = [];
+            for (let i = 0; i < wave3Scenes.length; i++) {
+                lamps.push(i < w3Idx ? '💎' : '⚪');
+            }
+            document.getElementById('crystal-lamps').innerHTML = lamps.join('');
+
+            document.getElementById('w3-step-num').innerText = w3Idx + 1;
+            document.getElementById('w3-scene-emoji').innerText = scene.emoji;
+            document.getElementById('w3-scene-title').innerText = scene.title;
+
+            const card = document.getElementById('w3-card');
+            card.classList.remove('pop-in');
+            void card.offsetWidth;
+            card.classList.add('pop-in');
+
+            updateWave3Buttons();
+        }
+
+        function updateWave3Buttons() {
+            const scene = wave3Scenes[w3Idx];
+
+            // 左侧：感官按钮
+            document.getElementById('w3-organ-status').innerText = w3OrganDone ? `✅ ${scene.organ}` : '待选择';
+            document.getElementById('w3-organ-status').className = w3OrganDone
+                ? 'text-xs font-black px-2.5 py-0.5 rounded-full bg-emerald-500 text-white'
+                : 'text-xs font-black px-2.5 py-0.5 rounded-full bg-white text-pink-500 border border-pink-200';
+
+            document.getElementById('w3-organ-btns').innerHTML = allOrgans.map(org => {
+                const isSelectedCorrect = w3OrganDone && org.name === scene.organ;
+                return `
+                    <button onclick="selectWave3Organ('${org.name}')" class="btn-cute py-2.5 px-1 rounded-2xl border-2 font-black text-xs flex flex-col items-center ${
+                        isSelectedCorrect
+                            ? 'bg-emerald-500 border-emerald-300 text-white shadow'
+                            : 'bg-white hover:bg-pink-100 border-pink-200 text-slate-700'
+                    }">
+                        <span class="text-xl mb-0.5">${org.icon}</span>
+                        <span>${org.name}</span>
+                    </button>
+                `;
+            }).join('');
+
+            // 右侧：官能按钮
+            document.getElementById('w3-sense-status').innerText = w3SenseDone ? `✅ ${scene.sense}` : '待选择';
+            document.getElementById('w3-sense-status').className = w3SenseDone
+                ? 'text-xs font-black px-2.5 py-0.5 rounded-full bg-emerald-500 text-white'
+                : 'text-xs font-black px-2.5 py-0.5 rounded-full bg-white text-indigo-500 border border-indigo-200';
+
+            document.getElementById('w3-sense-btns').innerHTML = allSenses.map(sn => {
+                const isSelectedCorrect = w3SenseDone && sn === scene.sense;
+                return `
+                    <button onclick="selectWave3Sense('${sn}')" class="btn-cute py-3 px-1 rounded-2xl border-2 font-black text-xs md:text-sm flex flex-col items-center justify-center ${
+                        isSelectedCorrect
+                            ? 'bg-emerald-500 border-emerald-300 text-white shadow'
+                            : 'bg-white hover:bg-indigo-100 border-indigo-200 text-indigo-900'
+                    }">
+                        <span>${sn}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectWave3Organ(chosenOrgan) {
+            if (isTransitioning || w3OrganDone) return;
+            const scene = wave3Scenes[w3Idx];
+
+            if (chosenOrgan === scene.organ) {
+                w3OrganDone = true;
+                score += 60;
+                updateHUD();
+                updateWave3Buttons();
+                showToast(`💖 答对感官：【${chosenOrgan}】！`, true);
+                checkWave3PairComplete();
+            } else {
+                hearts = Math.max(1, hearts - 1);
+                updateHUD();
+                shakeStage();
+                showToast(`🤔 再想想，这个动作主要用到身体的哪个器官（感官）呢？`, false);
+            }
+        }
+
+        function selectWave3Sense(chosenSense) {
+            if (isTransitioning || w3SenseDone) return;
+            const scene = wave3Scenes[w3Idx];
+
+            if (chosenSense === scene.sense) {
+                w3SenseDone = true;
+                score += 60;
+                updateHUD();
+                updateWave3Buttons();
+                showToast(`🔮 答对官能：【${chosenSense}】！`, true);
+                checkWave3PairComplete();
+            } else {
+                hearts = Math.max(1, hearts - 1);
+                updateHUD();
+                shakeStage();
+                showToast(`🤔 官能带有一个“觉”字哦，再仔细选一选！`, false);
+            }
+        }
+
+        function checkWave3PairComplete() {
+            if (w3OrganDone && w3SenseDone) {
+                isTransitioning = true;
+                // 点亮当前水晶灯
+                const lamps = [];
+                for (let i = 0; i < wave3Scenes.length; i++) {
+                    lamps.push(i <= w3Idx ? '💎' : '⚪');
+                }
+                document.getElementById('crystal-lamps').innerHTML = lamps.join('');
+
+                setTimeout(() => {
+                    isTransitioning = false;
+                    w3Idx++;
+                    if (w3Idx >= wave3Scenes.length) {
+                        showWaveComplete(3);
+                    } else {
+                        renderWave3();
+                    }
+                }, 900);
+            }
+        }
+
+        // ==================== 波次过关结算 ====================
+        function showWaveComplete(waveNum) {
+            hideAllScreens();
+            document.getElementById('hud').classList.add('hidden');
+            document.getElementById('end-screen').classList.remove('hidden');
+
+            const nextBtn = document.getElementById('next-wave-btn');
+            document.getElementById('end-score').innerText = `${score} 🌟`;
+            document.getElementById('end-hearts').innerText = '💖'.repeat(hearts);
+
+            if (waveNum === 1) {
+                document.getElementById('end-emoji').innerText = '🧺🍓🥦';
+                document.getElementById('end-title').innerText = '第一波营业大成功！';
+                document.getElementById('end-desc').innerText = '你把所有水果和蔬菜都分类得整整齐齐啦！森林小动物们准备来点单咯！';
+                document.getElementById('end-medal').innerText = '🌸 甜美果蔬整理师';
+                nextBtn.classList.remove('hidden');
+            } else if (waveNum === 2) {
+                document.getElementById('end-emoji').innerText = '🐰🐻🐧🐱';
+                document.getElementById('end-title').innerText = '第二波营业大成功！';
+                document.getElementById('end-desc').innerText = '酸、辣、冷、热全部特调成功，小动物们都非常满意！最后一关要来点亮水晶吊灯啦！';
+                document.getElementById('end-medal').innerText = '🍨 魔法特调小甜心';
+                nextBtn.classList.remove('hidden');
+            } else {
+                document.getElementById('end-emoji').innerText = '👑💎🧁';
+                document.getElementById('end-title').innerText = '魔法水晶吊灯全亮啦！大通关！';
+                document.getElementById('end-desc').innerText = '太厉害了！你完全分清了“感官”和“官能”，也掌握了所有的食物分类，是当之无愧的皇家魔法小店长！';
+                document.getElementById('end-medal').innerText = '👑 皇家魔法科学小店长';
+                nextBtn.classList.add('hidden');
+            }
+        }
+
+        function goNextWave() {
+            if (currentWave < 3) {
+                startWave(currentWave + 1, true);
+            }
+        }
+    </script>
+</body>
+</html>
